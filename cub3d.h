@@ -56,9 +56,12 @@ typedef struct cub3d
 
 
 
-    float pdx;
-    float pdy;
+    float pdx_1;
+    float pdy_1;
     float pa;
+
+    float pdx_2;
+    float pdy_2;
 
     int *F;
     int *C;
@@ -124,4 +127,13 @@ void draw_vision(t_cub3d *data , t_rt *rt);
 float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle);
 float   calcul_v_dist(t_cub3d *data, t_rt *rt,float angle);
 void draw_rc(t_cub3d *data, float r_dist , int line_pos, float angle);
+
+
+
+
+int	move_player(int key, t_cub3d *data);
+float dist(float ax,float ay, float bx, float by, float ang);
+void int_delta(t_cub3d *data);
+float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle);
+
 #endif

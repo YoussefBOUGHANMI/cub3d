@@ -42,7 +42,6 @@ while(data->map[i])
 }
 }
 
-
 void int_pos_player(t_cub3d *data)
 {
     int i;
@@ -109,15 +108,15 @@ while (i < 2)
         iii = 0;
         while (iii<3)
         {
-             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx * 1/3) - 1 + iii , floor(y + data->pdy * 1/3) - 1 + ii, 0x0000FF);
-             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx * 2/3) - 1 + iii , floor(y + data->pdy * 2/3) - 1 + ii, 0x0000FF);
-             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx ) - 1 + iii , floor(y + data->pdy) - 1 + ii, 0x0000FF);
+             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx_1 * 1/3) - 1 + iii , floor(y + data->pdy_1 * 1/3) - 1 + ii, 0x0000FF);
+             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx_1 * 2/3) - 1 + iii , floor(y + data->pdy_1 * 2/3) - 1 + ii, 0x0000FF);
+             mlx_pixel_put(data->mlx, data->mlx_win, floor(x + data->pdx_1 ) - 1 + iii , floor(y + data->pdy_1) - 1 + ii, 0x0000FF);
              iii++;
         }
         ii++;
     }
-    x = floor(x + data->pdx );
-	y = floor(y + data->pdy);
+    x = floor(x + data->pdx_1 );
+	y = floor(y + data->pdy_1);
     i++;
 }
 }
@@ -160,19 +159,19 @@ int get_wall_col(t_cub3d *data)
     if (data->rt.wall_dir == 'v' && data->px > data->rt.v_rx)
         return(0x00006A);
 
-        printf("p1\n");
+        //printf("p1\n");
     //ouest
     if (data->rt.wall_dir == 'v'&& data->px < data->rt.v_rx)
         return(0x0000C4);
-    printf("p2\n");
+    //printf("p2\n");
     //nord
     if (data->rt.wall_dir == 'h' && data->py > data->rt.h_ry)
         return(0x6A0000);
-    printf("p3\n");
+    //printf("p3\n");
     //sud
     if (data->rt.wall_dir == 'h' && data->py < data->rt.h_ry)
         return(0xC40000);
-    printf("p4\n");
+    //printf("p4\n");
     return(0);
 }
 
@@ -180,34 +179,35 @@ int get_wall_col(t_cub3d *data)
 void draw_rc(t_cub3d *data, float r_dist , int line_pos, float angle)
 {
 int ii = 0;
+int size_h = 360;
 float ca = data->pa - angle;
-float line_H  = 32 * 320/(r_dist * cos(ca));
+float line_H  = 32 * size_h/(r_dist * cos(ca));
 int wall_col;
 if(ca < 0)
     ca+=2*PI;
 if(ca > 2*PI)
     ca-=2*PI;
-if(line_H>320)
-    line_H = 320;
+if(line_H>size_h)
+    line_H = size_h;
 if(line_H<0)
     line_H = 0;
 
 
 wall_col = get_wall_col(data);
 // le plafond
-while (ii< 160 - floor(line_H/2))
+while (ii< size_h/2 - floor(line_H/2))
     {   
         mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos , ii , 0xFFFFFF);
         ii++;
     }
 // le mur
-while (ii< 160 + floor(line_H/2))
+while (ii< size_h/2 + floor(line_H/2))
     {   
         mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos, ii  , wall_col);
         ii++;
     }
 // le sol
-while (ii < 320)
+while (ii < size_h)
     {   
         mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos , ii  , 0x000000);
         ii++;
@@ -216,17 +216,17 @@ while (ii < 320)
 
 
 
+
+
 void draw_vision(t_cub3d *data , t_rt *rt)
 {
-    float angle = data->pa - DR * 240;
-    int i = 0;
+    float angle;
+    int i;
 
-
-
-    printf("\n\n\n start \n\n\n");
+    angle = data->pa - DR * 240;
+    i = 0;
     while (i < 480)
     {
-        printf("-----------------------------------------------------------------  i = %d\n " , i);
         if(angle < 0)
                 angle += 2*PI;
         if(angle > 2 * PI)
@@ -242,19 +242,9 @@ void draw_vision(t_cub3d *data , t_rt *rt)
             rt->r_dist = calcul_v_dist(data, rt, angle);
         }
         draw_rc(data , rt->r_dist , i , angle);
-        draw_line(data ,angle);
+        //draw_rc(data , rt->r_dist , 2*i + 1 , angle);
+        //draw_line(data ,angle);
         angle += DR;
         i++;
     }
-
-//milieu
-int ii = 0;
-while (ii< 480)
-    {   
-        mlx_pixel_put(data->mlx, data->mlx_win, 1100 + ii , 160 , 0x00C809);
-        ii++;
-    }
-
-printf("pos %d  %d \n" , data->px , data->py);
-
 }
