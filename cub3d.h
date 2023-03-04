@@ -12,7 +12,22 @@
 # define P2 PI/2
 # define P3 3*PI/2
 # define cube_size 32
-# define DR 0.0174533 / 8
+# define DR 0.0174533 / 16
+
+
+typedef struct image
+{
+
+    void *img;
+    void *addr;
+
+    int bits_per_pixel;
+    int line_length;
+    int endian;
+
+
+
+}t_image;
 
 typedef struct ray_cast 
 {
@@ -36,7 +51,6 @@ typedef struct ray_cast
 
     float r_dist;
     char wall_dir;
-
 } t_rt;
 
 typedef struct cub3d 
@@ -70,6 +84,9 @@ typedef struct cub3d
     void	*mlx_win;
 
     t_rt    rt;
+
+    t_image *data_im;
+
 } t_cub3d;
 
 
@@ -135,5 +152,6 @@ int	move_player(int key, t_cub3d *data);
 float dist(float ax,float ay, float bx, float by, float ang);
 void int_delta(t_cub3d *data);
 float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle);
+void display(t_cub3d *data);
 
 #endif

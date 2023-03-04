@@ -35,12 +35,6 @@ int ft_cube3D(t_cub3d *data)
     return(0);
 }
 
-void test(t_cub3d *data)
-{
-
-return;
-
-}
 
 
 int main(int ac, char **av)
@@ -49,14 +43,23 @@ int main(int ac, char **av)
 
     ft_cube3D(&data);
     data.mlx = mlx_init();
-    data.mlx_win = mlx_new_window(data.mlx, get_width(data.map) * cube_size + 2000, 
-                                  get_length(data.map) * cube_size + 500, "cub3d");
+    data.mlx_win = mlx_new_window(data.mlx, 960, 720, "cub3d");
     int_pos_player(&data);
     int_delta(&data);
-    //draw_mini_map(&data);
-    //draw_player(&data);
-    //draw_view_line(&data);
-    draw_vision(&data , &data.rt);
+    t_image *im = malloc(sizeof(t_image));
+
+    data.data_im = im;
+    data.data_im->img = mlx_new_image(data.mlx, 960, 720 );  
+    data.data_im->addr = mlx_get_data_addr(data.data_im->img, &data.data_im->bits_per_pixel,
+                                             &data.data_im->line_length, &data.data_im->endian);  
+
+    draw_mini_map(&data);
+    draw_player(&data);
+    draw_view_line(&data);
+
+
+
+    //draw_vision(&data , &data.rt);
     mlx_hook(data.mlx_win, 2, 1L<<0 , move_player , &data);
     mlx_loop(data.mlx);
     return (0);

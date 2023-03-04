@@ -3,8 +3,8 @@
 
 int check_case(int x, int y , t_cub3d *data)
 {
-    if(data->map[((int)y>>5)<<5 / 32][((int)x>>5)<<5 / 32] == '1')
-        return(0);
+    //if(data->map[((int)y>>5)<<5 / 32][((int)x>>5)<<5 / 32] == '1')
+      //  return(0);
     return(1);
 }
 
@@ -16,14 +16,14 @@ void move_cam_left(t_cub3d *data)
     data->pa -= 0.25;
     if(data->pa <0)
         data->pa += 2*PI;
-    data->pdx_1 = cos(data->pa) * 12;
-    data->pdy_1= sin(data->pa) * 12;
+    data->pdx_1 = cos(data->pa) * 10;
+    data->pdy_1= sin(data->pa) * 10;
 
     angle = data->pa - P2;
     if(angle <0)
         angle += 2*PI;
-    data->pdx_2 = cos(angle) * 12;
-    data->pdy_2= sin(angle) * 12;
+    data->pdx_2 = cos(angle) * 10;
+    data->pdy_2= sin(angle) * 10;
 
 }
 
@@ -34,14 +34,14 @@ void move_cam_right(t_cub3d *data)
     data->pa += 0.25;
     if(data->pa > 2 * PI)
         data->pa -= 2*PI;
-    data->pdx_1 = cos(data->pa) * 12;
-    data->pdy_1 = sin(data->pa) * 12;
+    data->pdx_1 = cos(data->pa) * 10;
+    data->pdy_1 = sin(data->pa) * 10;
 
     angle = data->pa - P2;
     if(angle <0)
         angle += 2*PI;
-    data->pdx_2 = cos(angle) * 12;
-    data->pdy_2 = sin(angle) * 12;
+    data->pdx_2 = cos(angle) * 10;
+    data->pdy_2 = sin(angle) * 10;
 }
 
 
@@ -84,7 +84,7 @@ void move_player_right(t_cub3d *data)
 
 int	move_player(int key, t_cub3d *data)
 {
-
+    
 	if(key == 123)
         move_cam_left(data);
     if(key == 124)
@@ -102,6 +102,7 @@ int	move_player(int key, t_cub3d *data)
     //draw_mini_map(data);
     //draw_player(data);
     //draw_view_line(data);
+    
     draw_vision(data , &data->rt);
 	return (0);
 }

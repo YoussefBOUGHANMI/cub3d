@@ -176,10 +176,21 @@ int get_wall_col(t_cub3d *data)
 }
 
 
+int create_trgb(int r, int g, int b)
+{
+    return (r << 16 | g << 8 | b);
+}
+void    my_mlx_pixel_put(t_image *img, int x, int y, int color)
+{
+    char    *dst;
+    dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
+    *(unsigned int*)dst = color;
+}
+
 void draw_rc(t_cub3d *data, float r_dist , int line_pos, float angle)
 {
 int ii = 0;
-int size_h = 360;
+int size_h = 720;
 float ca = data->pa - angle;
 float line_H  = 32 * size_h/(r_dist * cos(ca));
 int wall_col;
@@ -197,19 +208,22 @@ wall_col = get_wall_col(data);
 // le plafond
 while (ii< size_h/2 - floor(line_H/2))
     {   
-        mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos , ii , 0xFFFFFF);
+        my_mlx_pixel_put(data->data_im, line_pos, ii , 0xFFFFFF);
+        //mlx_pixel_put(data->mlx, data->mlx_win,  line_pos , ii , 0xFFFFFF);
         ii++;
     }
 // le mur
 while (ii< size_h/2 + floor(line_H/2))
     {   
-        mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos, ii  , wall_col);
+        my_mlx_pixel_put(data->data_im, line_pos, ii , wall_col);
+        //mlx_pixel_put(data->mlx, data->mlx_win, line_pos, ii  , wall_col);
         ii++;
     }
 // le sol
 while (ii < size_h)
     {   
-        mlx_pixel_put(data->mlx, data->mlx_win, 1100 + line_pos , ii  , 0x000000);
+        my_mlx_pixel_put(data->data_im, line_pos, ii , 0x000000);
+        //mlx_pixel_put(data->mlx, data->mlx_win,  line_pos , ii  , 0x000000);
         ii++;
     }
 }
@@ -223,9 +237,9 @@ void draw_vision(t_cub3d *data , t_rt *rt)
     float angle;
     int i;
 
-    angle = data->pa - DR * 240;
+    angle = data->pa - DR * 480;
     i = 0;
-    while (i < 480)
+    while (i < 480 * 2)
     {
         if(angle < 0)
                 angle += 2*PI;
@@ -241,10 +255,12 @@ void draw_vision(t_cub3d *data , t_rt *rt)
             rt->wall_dir = 'v';
             rt->r_dist = calcul_v_dist(data, rt, angle);
         }
-        draw_rc(data , rt->r_dist , i , angle);
-        //draw_rc(data , rt->r_dist , 2*i + 1 , angle);
-        //draw_line(data ,angle);
+        draw_rc(data , rt->r_dist , i, angle);
+        //draw_rc(data , rt->r_dist , 2*i  + 1, angle);
         angle += DR;
         i++;
     }
+    mlx_put_image_to_window(data->mlx, data->mlx_win, data->data_im->img, 0, 0);
+
 }
+
