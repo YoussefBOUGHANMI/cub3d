@@ -2,7 +2,7 @@
 
 
 
-void calcul_angle_h(t_cub3d *data, t_rt *rt,float angle, int *top)
+void calcul_angle_h(t_cub3d *data, t_rt *rt,double angle, int *top)
 {
     rt->aTan = -1/tan(angle);
     if(angle>PI)
@@ -21,13 +21,13 @@ void calcul_angle_h(t_cub3d *data, t_rt *rt,float angle, int *top)
     }
     if(angle == 0 || angle == PI)
     {
-        rt->h_rx = data->px * 32;
-        rt->h_ry = data->py * 32;
+        rt->h_rx = 30000;
+        rt->h_ry = 30000;
         *top = 1;
     }
 }
 
-void    calcul_h_dist_bis(t_cub3d *data, t_rt *rt,float angle, int *top)
+void    calcul_h_dist_bis(t_cub3d *data, t_rt *rt,double angle, int *top)
 {
     if((int)rt->h_rx>>5 >= get_width(data->map))
         rt->h_rx = get_width(data->map) * 32;
@@ -40,7 +40,7 @@ void    calcul_h_dist_bis(t_cub3d *data, t_rt *rt,float angle, int *top)
     *top = 1;
 }
 
-float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle)
+void   calcul_h_dist(t_cub3d *data, t_rt *rt,double angle)
 {
     int top = 0;
 
@@ -61,6 +61,6 @@ float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle)
             rt->h_ry+=rt->h_yo;
         }
     }
-    return(dist(data->px, data->py, rt->h_rx, rt->h_ry, angle));
+    rt->h_dist = dist(data->px, data->py, rt->h_rx, rt->h_ry, angle);
 }
 

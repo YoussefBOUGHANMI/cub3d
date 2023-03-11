@@ -8,10 +8,11 @@
 # include <stdlib.h>
 # include <math.h>
 # include "mlx/mlx.h"
-# define PI 3.14159265359
+# define PI 3.141592653589793238462643383279502
 # define P2 PI/2
 # define P3 3*PI/2
 # define cube_size 32
+# define size_h 540
 # define DR 0.0174533 / 16
 
 
@@ -31,26 +32,28 @@ typedef struct image
 
 typedef struct ray_cast 
 {
-    float h_rx;
-    float h_ry;
-    float h_ra;
-    float h_xo;
-    float h_yo;
-    float h_dist;
-    float aTan;
+    double h_rx;
+    double h_ry;
+    double h_ra;
+    double h_xo;
+    double h_yo;
+    double h_dist;
+    double aTan;
 
 
 
-    float v_rx;
-    float v_ry;
-    float v_ra;
-    float v_xo;
-    float v_yo;
-    float v_dist;
-    float nTan;
+    double v_rx;
+    double v_ry;
+    double v_ra;
+    double v_xo;
+    double v_yo;
+    double v_dist;
+    double nTan;
 
-    float r_dist;
+    double r_dist;
     char wall_dir;
+    int rx;
+    int ry;
 } t_rt;
 
 typedef struct cub3d 
@@ -70,12 +73,12 @@ typedef struct cub3d
 
 
 
-    float pdx_1;
-    float pdy_1;
-    float pa;
+    double pdx_1;
+    double pdy_1;
+    double pa;
 
-    float pdx_2;
-    float pdy_2;
+    double pdx_2;
+    double pdy_2;
 
     int *F;
     int *C;
@@ -86,6 +89,23 @@ typedef struct cub3d
     t_rt    rt;
 
     t_image *data_im;
+    t_image *wall_im;
+
+    int i_rays;
+    int rays[960];
+    int rays_col[960];
+
+
+    int old_x;
+    int old_y;
+    int old_dir;
+
+
+
+    int nb_cube;
+    int x_desc[960];  //[0,0,0,1,1,2,2,2,2,3,3,3,3,3,3]
+
+
 
 } t_cub3d;
 
@@ -135,23 +155,22 @@ int get_length(char **map);
 void int_pos_player(t_cub3d *data);
 void draw_player(t_cub3d *data);
 void   draw_view_line(t_cub3d *data);
-void   draw_line(t_cub3d *data , float angle);
+void   draw_line(t_cub3d *data , double angle);
 void draw_vision(t_cub3d *data , t_rt *rt);
 
 
 
 // rc 
-float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle);
-float   calcul_v_dist(t_cub3d *data, t_rt *rt,float angle);
-void draw_rc(t_cub3d *data, float r_dist , int line_pos, float angle);
+void   calcul_h_dist(t_cub3d *data, t_rt *rt,double angle);
+void   calcul_v_dist(t_cub3d *data, t_rt *rt,double angle);
+void draw_rc(t_cub3d *data, double r_dist , int line_pos, double angle);
 
 
 
 
 int	move_player(int key, t_cub3d *data);
-float dist(float ax,float ay, float bx, float by, float ang);
+double dist(double ax,double ay, double bx, double by, double ang);
 void int_delta(t_cub3d *data);
-float   calcul_h_dist(t_cub3d *data, t_rt *rt,float angle);
 void display(t_cub3d *data);
 
 #endif

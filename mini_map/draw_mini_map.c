@@ -122,7 +122,7 @@ while (i < 2)
 }
 
 
-void   draw_line(t_cub3d *data , float angle)
+void   draw_line(t_cub3d *data , double angle)
 {
 int i = 0;
 int x;
@@ -153,23 +153,23 @@ while (i < 150)
 }
 }
 
-int get_wall_col(t_cub3d *data)
+int get_wall_col(t_cub3d *data, t_rt *rt)
 {
     //est
-    if (data->rt.wall_dir == 'v' && data->px > data->rt.v_rx)
+    if (rt->h_dist > rt->v_dist && data->px > rt->v_rx)
         return(0x00006A);
 
         //printf("p1\n");
     //ouest
-    if (data->rt.wall_dir == 'v'&& data->px < data->rt.v_rx)
+    if (rt->h_dist > rt->v_dist && data->px < rt->v_rx)
         return(0x0000C4);
     //printf("p2\n");
     //nord
-    if (data->rt.wall_dir == 'h' && data->py > data->rt.h_ry)
+    if (rt->h_dist < rt->v_dist && data->py > rt->h_ry)
         return(0x6A0000);
     //printf("p3\n");
     //sud
-    if (data->rt.wall_dir == 'h' && data->py < data->rt.h_ry)
+    if (rt->h_dist < rt->v_dist && data->py < rt->h_ry)
         return(0xC40000);
     //printf("p4\n");
     return(0);
@@ -187,80 +187,118 @@ void    my_mlx_pixel_put(t_image *img, int x, int y, int color)
     *(unsigned int*)dst = color;
 }
 
-void draw_rc(t_cub3d *data, float r_dist , int line_pos, float angle)
+unsigned int    get_pixel_col(t_image *img, int x, int y)
 {
-int ii = 0;
-int size_h = 720;
-float ca = data->pa - angle;
-float line_H  = 32 * size_h/(r_dist * cos(ca));
-int wall_col;
-if(ca < 0)
-    ca+=2*PI;
-if(ca > 2*PI)
-    ca-=2*PI;
-if(line_H>size_h)
-    line_H = size_h;
-if(line_H<0)
-    line_H = 0;
+    char    *dst;
+    dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
+    return(*(unsigned int*)dst); 
+}
 
+void add_ray(t_cub3d *data, t_rt *rt , int line_pos, double angle)
+{
+    double ca;
+    int wall_col;
+    double line_H;
 
-wall_col = get_wall_col(data);
-// le plafond
-while (ii< size_h/2 - floor(line_H/2))
-    {   
-        my_mlx_pixel_put(data->data_im, line_pos, ii , 0xFFFFFF);
-        //mlx_pixel_put(data->mlx, data->mlx_win,  line_pos , ii , 0xFFFFFF);
-        ii++;
+    ca = data->pa - angle;
+    if(rt->h_dist < rt->v_dist)
+    {
+        rt->r_dist = rt->h_dist;
+        rt->rx = (int)rt->h_rx>>5;
+        rt->ry = (int)rt->h_ry>>5;
     }
-// le mur
-while (ii< size_h/2 + floor(line_H/2))
-    {   
-        my_mlx_pixel_put(data->data_im, line_pos, ii , wall_col);
-        //mlx_pixel_put(data->mlx, data->mlx_win, line_pos, ii  , wall_col);
-        ii++;
+    else 
+    {
+        rt->r_dist = rt->v_dist;
+        rt->rx = (int)rt->v_rx>>5;
+        rt->ry = (int)rt->v_ry>>5;
     }
-// le sol
-while (ii < size_h)
-    {   
-        my_mlx_pixel_put(data->data_im, line_pos, ii , 0x000000);
-        //mlx_pixel_put(data->mlx, data->mlx_win,  line_pos , ii  , 0x000000);
-        ii++;
-    }
+    line_H = 32 * size_h/(rt->r_dist * cos(ca));
+    if(line_H>size_h)
+        line_H = size_h;
+    if(line_H<0)
+        line_H = 0;
+    data->rays[line_pos] = line_H;
+    data->rays_col[line_pos] = get_wall_col(data, rt);
 }
 
 
 
 
 
+
+void draw_screen(t_cub3d *data)
+{
+int x_col;
+int y_col;
+int col;
+int i = 0;
+int ii;
+
+while(i<960)
+{
+    ii = 0;
+    // le plafond
+    while (ii< size_h/2 - floor(data->rays[i]/2))
+        {   
+            my_mlx_pixel_put(data->data_im, i, ii , 0x66B2FF);
+            ii++;
+        }
+    // le mur
+    while (ii< size_h/2 + floor(data->rays[i]/2))
+        {   
+            //my_mlx_pixel_put(data->data_im, i, ii , data->rays_col[i]);
+            //printf("%d : %f \n" ,i , floor(((ii - size_h/2 + floor(data->rays[i]/2)) /floor(data->rays[i])) * 63 ));
+            col = get_pixel_col(data->wall_im, (int)data->x_desc[i],
+            (int)floor(((ii - size_h/2 + floor(data->rays[i]/2)) /floor(data->rays[i])) * 63 ));
+
+            my_mlx_pixel_put(data->data_im, i, ii , col);
+            ii++;
+        }
+    // le sol
+    while (ii < size_h)
+        {   
+            my_mlx_pixel_put(data->data_im, i, ii , 0x808080);
+            ii++;
+        }
+    i++;
+}
+}
+
+
+void    calcul_x_size(int line_pos, t_rt *rt , t_cub3d *data)
+{
+
+    if(rt->h_dist < rt->v_dist)
+        data->x_desc[line_pos] = (int)floor(rt->h_rx * 2) % 64;
+    else
+        data->x_desc[line_pos] = (int)floor(rt->v_ry * 2) % 64;
+
+}
+
 void draw_vision(t_cub3d *data , t_rt *rt)
 {
-    float angle;
+    double angle;
     int i;
 
+    data->nb_cube = 0;
     angle = data->pa - DR * 480;
     i = 0;
     while (i < 480 * 2)
     {
-        if(angle < 0)
+        if(angle <= 0)
                 angle += 2*PI;
-        if(angle > 2 * PI)
+        if(angle >= 2 * PI)
                 angle -= 2*PI;
-        if (calcul_h_dist(data, rt, angle) < calcul_v_dist(data, rt, angle))
-        {
-            rt->wall_dir = 'h';
-            rt->r_dist = calcul_h_dist(data, rt, angle);
-        }
-        else 
-        {
-            rt->wall_dir = 'v';
-            rt->r_dist = calcul_v_dist(data, rt, angle);
-        }
-        draw_rc(data , rt->r_dist , i, angle);
-        //draw_rc(data , rt->r_dist , 2*i  + 1, angle);
+
+        calcul_h_dist(data, rt, angle);
+        calcul_v_dist(data, rt, angle);
+        add_ray(data , rt , i, angle);
+        calcul_x_size(i , rt , data);
         angle += DR;
         i++;
     }
+    draw_screen(data);
     mlx_put_image_to_window(data->mlx, data->mlx_win, data->data_im->img, 0, 0);
-
 }
 

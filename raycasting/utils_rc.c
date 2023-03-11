@@ -2,7 +2,7 @@
 
 
 
-float dist(float ax,float ay, float bx, float by, float ang)
+double dist(double ax,double ay, double bx, double by, double ang)
 {
     return (sqrt((bx-ax) * (bx-ax) + (by-ay) * (by-ay)));
 }
@@ -10,7 +10,7 @@ float dist(float ax,float ay, float bx, float by, float ang)
 
 void int_delta(t_cub3d *data)
 {
-    float angle;
+    double angle;
 
     data->pa = 0;
     data->pdx_1 = cos(data->pa) * 12;

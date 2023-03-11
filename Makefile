@@ -13,7 +13,7 @@ OBJS = $(SRCS:.c=.o)
 
 CC = gcc
 
-LFLAGS	=	-I. -Lmlx -lmlx -framework OpenGL -framework Appkit
+LFLAGS	=	-I. -Lmlx -lmlx -framework OpenGL -framework Appkit -g -fsanitize=address
 
 # CFLAGS = -Wall -Wextra -Werror
 

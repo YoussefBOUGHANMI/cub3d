@@ -3,17 +3,25 @@
 
 int check_case(int x, int y , t_cub3d *data)
 {
-    //if(data->map[((int)y>>5)<<5 / 32][((int)x>>5)<<5 / 32] == '1')
-      //  return(0);
+    if(data->map[((int)y>>5)<<5 / 32][((int)x>>5)<<5 / 32] == '1')
+        return(0);
+    if(data->map[((int)(y+2)>>5)<<5 / 32][((int)(x+2)>>5)<<5 / 32] == '1')
+        return(0);
+    if(data->map[((int)(y+2)>>5)<<5 / 32][((int)(x-2)>>5)<<5 / 32] == '1')
+        return(0);
+    if(data->map[((int)(y-2)>>5)<<5 / 32][((int)(x+2)>>5)<<5 / 32] == '1')
+        return(0);
+    if(data->map[((int)(y-2)>>5)<<5 / 32][((int)(x-2)>>5)<<5 / 32] == '1')
+        return(0);
     return(1);
 }
 
 
 void move_cam_left(t_cub3d *data)
 {
-    float angle;
+    double angle;
 
-    data->pa -= 0.25;
+    data->pa -= 0.22;
     if(data->pa <0)
         data->pa += 2*PI;
     data->pdx_1 = cos(data->pa) * 10;
@@ -29,9 +37,9 @@ void move_cam_left(t_cub3d *data)
 
 void move_cam_right(t_cub3d *data)
 {
-    float angle;
+    double angle;
 
-    data->pa += 0.25;
+    data->pa += 0.22;
     if(data->pa > 2 * PI)
         data->pa -= 2*PI;
     data->pdx_1 = cos(data->pa) * 10;
@@ -84,7 +92,6 @@ void move_player_right(t_cub3d *data)
 
 int	move_player(int key, t_cub3d *data)
 {
-    
 	if(key == 123)
         move_cam_left(data);
     if(key == 124)
